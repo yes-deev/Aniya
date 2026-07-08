@@ -1,0 +1,22 @@
+name: Test ARM64 Runner Specs
+
+on:
+  workflow_dispatch: # Allows you to trigger this manually from the Actions tab
+
+jobs:
+  check-specs:
+    runs-on: ubuntu-24.04-arm
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Update Package List
+        run: sudo apt-get update
+
+      - name: Install Neofetch
+        run: sudo apt-get install -y neofetch
+
+      - name: Run Neofetch
+        run: neofetch
+        
