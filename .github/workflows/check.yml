@@ -1,0 +1,61 @@
+name: Test Binderfs Compatibility
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify-binder:
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - name: Check Kernel Config
+        run: |
+          echo "=== System Info ==="
+          uname -r
+          
+          echo "=== Checking Available Filesystems ==="
+          if grep -q "binder" /proc/filesystems; then
+            echo "✓ Success: Kernel supports binderfs!"
+          else
+            echo "✗ Error: binderfs is not compiled into this kernel."
+            exit 1
+          fi
+
+      - name: Mount and Allocate Nodes
+        run: |
+          echo "=== Mounting Binderfs ==="
+          sudo mkdir -p /dev/binderfs
+          sudo mount -t binder binder /dev/binderfs
+          
+          echo "=== Creating IPC Channels ==="
+          sudo bash -c "echo binder > /dev/binderfs/binder-control"
+          sudo bash -c "echo hwbinder > /dev/binderfs/binder-control"
+          sudo bash -c "echo vndbinder > /dev/binderfs/binder-control"
+          
+          echo "=== Setting Permissions ==="
+          sudo chmod 666 /dev/binderfs/*
+
+      - name: Validate Devices (The Real Test)
+        run: |
+          echo "=== Verifying Character Devices ==="
+          ls -l /dev/binderfs
+          
+          # Check if the device files are actually recognized as character devices (marked with 'c')
+          for dev in binder hwbinder vndbinder; do
+            if [ -c "/dev/binderfs/$dev" ]; then
+              echo "✓ $dev is a valid character device node."
+            else
+              echo "✗ $dev failed to create properly."
+              exit 1
+            fi
+          done
+          
+          echo "🎉 Setup Verified: Kernel binder implementation works perfectly!"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          echo "=== Cleaning up mount point ==="
+          sudo umount /dev/binderfs || true
+          sudo rm -rf /dev/binderfs || true
+          
