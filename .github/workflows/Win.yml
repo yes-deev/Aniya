@@ -1,0 +1,34 @@
+name: Namespace Windows 2022 (8 Core)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows-compute:
+    # Routes the job to Namespace's Windows Server 2022 (8 vCPU / 16GB RAM)
+    runs-on: nscloud-windows-2022-amd64-8x16
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Display System Information
+        run: |
+          echo "========================================="
+          echo "🖥️ HOST OS INFORMATION"
+          echo "========================================="
+          systeminfo | Select-String "OS Name", "OS Version", "System Type", "Total Physical Memory"
+          
+      - name: Display CPU Core Count
+        run: |
+          echo "========================================="
+          echo "⚙️ CPU SPECIFICATIONS"
+          echo "========================================="
+          Get-WmiObject -Class Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors
+
+      - name: Keep VM Alive for 2 Hours for RDP
+        run: |
+          Write-Host "VM is now ready and idling for 2 hours!" -ForegroundColor Green
+          Write-Host "Open your terminal and run: nsc rdp <instance-id>" -ForegroundColor Yellow
+          # 7200 seconds = 2 Hours
+          Start-Sleep -Seconds 7200
