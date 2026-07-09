@@ -1,0 +1,21 @@
+name: ARM64 System Info (Neofetch)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  system-info:
+    # Routes the job to Namespace's ARM64 server with 8 Cores and 16GB RAM
+    runs-on: nscloud-ubuntu-24.04-arm64-8x16
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Update apt and install neofetch
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y neofetch
+
+      - name: Run neofetch
+        run: neofetch
