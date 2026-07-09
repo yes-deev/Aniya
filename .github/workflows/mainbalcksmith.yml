@@ -1,0 +1,25 @@
+name: Blacksmith ARM Neofetch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-neofetch:
+    # Routes the job to Blacksmith's 8-core ARM data center
+    runs-on: blacksmith-8vcpu-ubuntu-2404-arm 
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install and Run Neofetch
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y neofetch
+          
+          echo "=========================================================="
+          echo "🖥️ BLACKSMITH ARM SYSTEM SPECS:"
+          echo "=========================================================="
+          neofetch
+          echo "=========================================================="
+          
