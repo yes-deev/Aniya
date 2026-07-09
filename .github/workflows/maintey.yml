@@ -6,7 +6,7 @@ on:
 jobs:
   interactive-emulator:
     runs-on: ubuntu-latest # x86_64 host with /dev/kvm acceleration
-    timeout-minutes: 60
+    timeout-minutes: 360
 
     steps:
       - name: Checkout Code
@@ -88,5 +88,5 @@ jobs:
           echo "Android environment fully reachable via automated interfaces!"
 
           # Keep the session open for 1 hour
-          sleep 1h
+          sleep 6h
           
