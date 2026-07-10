@@ -1,0 +1,12 @@
+image: Visual Studio 2022 # This gives you a Windows Server 2022 machine
+
+# This officially pauses the build and opens Port 3389 for Remote Desktop
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+build: off
+test: off
+
+# Keeps the machine alive for the maximum 60 free minutes
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
